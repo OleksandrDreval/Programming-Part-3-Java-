@@ -12,6 +12,9 @@ import ua.nure.ice.bookcatalog.ui.command.ShowAllBooksCommand;
 import ua.nure.ice.bookcatalog.ui.command.ShowBooksByGenreCommand;
 
 public class ConsoleUI {
+  private static final String SECTION_SEPARATOR = "========================================";
+  private static final String BLOCK_SEPARATOR = "----------------------------------------";
+
   private final Scanner scanner;
   private final Map<String, MenuCommand> commandByOption;
   private boolean running;
@@ -31,35 +34,57 @@ public class ConsoleUI {
   }
 
   public void start() {
+    printWelcome();
+
     while (running) {
       printMenu();
       String choice = scanner.nextLine().trim();
 
       MenuCommand command = commandByOption.get(choice);
       if (command == null) {
+        System.out.println(BLOCK_SEPARATOR);
         System.out.println("Unknown command. Try again.");
         System.out.println();
         continue;
       }
 
       try {
+        System.out.println(BLOCK_SEPARATOR);
         command.execute();
+        if (running) {
+          System.out.println(BLOCK_SEPARATOR);
+          System.out.println("Action completed.");
+        }
       } catch (RuntimeException exception) {
+        System.out.println(BLOCK_SEPARATOR);
         System.out.println("Error: " + exception.getMessage());
       }
 
       System.out.println();
     }
 
+    System.out.println(SECTION_SEPARATOR);
+    System.out.println("Goodbye.");
+    System.out.println(SECTION_SEPARATOR);
+
     scanner.close();
   }
 
   private void printMenu() {
-    System.out.println("===== BOOK CATALOG =====");
+    System.out.println(SECTION_SEPARATOR);
+    System.out.println("BOOK CATALOG MENU");
+    System.out.println(SECTION_SEPARATOR);
     for (Map.Entry<String, MenuCommand> entry : commandByOption.entrySet()) {
       System.out.println(entry.getKey() + ". " + entry.getValue().getTitle());
     }
+    System.out.println(BLOCK_SEPARATOR);
     System.out.print("Choose action: ");
+  }
+
+  private void printWelcome() {
+    System.out.println(SECTION_SEPARATOR);
+    System.out.println("Welcome to Book Catalog");
+    System.out.println(SECTION_SEPARATOR);
   }
 
   private void stop() {
