@@ -26,3 +26,4 @@ replay_pid*
 # Internal chaos files
 *-SEC.md
 .github/instructions/*.md
+target/*
