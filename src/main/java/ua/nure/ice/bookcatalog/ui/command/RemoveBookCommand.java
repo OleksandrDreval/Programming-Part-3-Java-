@@ -14,9 +14,13 @@ public class RemoveBookCommand implements MenuCommand {
 
   @Override
   public void execute() {
+    System.out.println("Remove book");
+    System.out.println("----------------------------------------");
+
     long id = inputHelper.readLong("Enter book id to remove: ");
     catalogService.removeBook(id);
     System.out.println("Book was removed successfully.");
+    System.out.println("Removed book id: " + id);
   }
 
   @Override

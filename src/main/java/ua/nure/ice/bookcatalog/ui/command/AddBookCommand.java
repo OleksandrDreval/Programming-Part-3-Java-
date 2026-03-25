@@ -16,13 +16,17 @@ public class AddBookCommand implements MenuCommand {
 
   @Override
   public void execute() {
+    System.out.println("Add new book");
+    System.out.println("----------------------------------------");
+
     String title = inputHelper.readNonEmptyText("Enter book title: ");
     String author = inputHelper.readNonEmptyText("Enter author: ");
     int publicationYear = inputHelper.readInt("Enter publication year: ");
     BookGenre genre = inputHelper.readGenre();
 
     Book book = catalogService.addBook(title, author, publicationYear, genre);
-    System.out.println("Book was added successfully with id: " + book.getId());
+    System.out.println("Book was added successfully.");
+    System.out.println("Created book id: " + book.getId());
   }
 
   @Override
