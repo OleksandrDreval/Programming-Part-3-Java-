@@ -11,6 +11,7 @@ import ua.nure.ice.bookcatalog.exception.DuplicateBookException;
 import ua.nure.ice.bookcatalog.exception.InvalidBookDataException;
 import ua.nure.ice.bookcatalog.model.Book;
 import ua.nure.ice.bookcatalog.model.BookGenre;
+import ua.nure.ice.bookcatalog.repository.BookRepository;
 import ua.nure.ice.bookcatalog.repository.InMemoryBookRepository;
 
 class CatalogServiceTest {
@@ -57,5 +58,44 @@ class CatalogServiceTest {
   void addBookShouldThrowOnInvalidData() {
     assertThrows(InvalidBookDataException.class,
         () -> catalogService.addBook("", "Author", 2020, BookGenre.FICTION));
+  }
+
+  @Test
+  void constructorShouldThrowWhenRepositoryIsNull() {
+    assertThrows(NullPointerException.class, () -> new CatalogService((BookRepository) null));
+  }
+
+  @Test
+  void removeBookShouldThrowWhenIdIsZero() {
+    assertThrows(InvalidBookDataException.class, () -> catalogService.removeBook(0));
+  }
+
+  @Test
+  void findBooksByGenreShouldThrowWhenGenreIsNull() {
+    assertThrows(InvalidBookDataException.class, () -> catalogService.findBooksByGenre(null));
+  }
+
+  @Test
+  void addBookShouldThrowWhenAuthorIsBlank() {
+    assertThrows(InvalidBookDataException.class,
+        () -> catalogService.addBook("Dune", "  ", 1965, BookGenre.FICTION));
+  }
+
+  @Test
+  void addBookShouldThrowWhenGenreIsNull() {
+    assertThrows(InvalidBookDataException.class,
+        () -> catalogService.addBook("Dune", "Frank Herbert", 1965, null));
+  }
+
+  @Test
+  void addBookShouldThrowWhenYearIsNonPositive() {
+    assertThrows(InvalidBookDataException.class,
+        () -> catalogService.addBook("Dune", "Frank Herbert", 0, BookGenre.FICTION));
+  }
+
+  @Test
+  void addBookShouldWrapModelValidationException() {
+    assertThrows(InvalidBookDataException.class,
+        () -> catalogService.addBook("Dune", "Frank Herbert", 1400, BookGenre.FICTION));
   }
 }
