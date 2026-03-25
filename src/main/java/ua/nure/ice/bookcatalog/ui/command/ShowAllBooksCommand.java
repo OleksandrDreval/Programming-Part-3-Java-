@@ -3,6 +3,7 @@ package ua.nure.ice.bookcatalog.ui.command;
 import java.util.List;
 import ua.nure.ice.bookcatalog.model.Book;
 import ua.nure.ice.bookcatalog.service.CatalogService;
+import ua.nure.ice.bookcatalog.ui.BookDisplayFormatter;
 
 public class ShowAllBooksCommand implements MenuCommand {
   private final CatalogService catalogService;
@@ -26,7 +27,7 @@ public class ShowAllBooksCommand implements MenuCommand {
     System.out.println("All books in catalog:");
     int index = 1;
     for (Book book : books) {
-      System.out.println(index++ + ") " + book);
+      System.out.println(index++ + ") " + BookDisplayFormatter.format(book));
     }
   }
 
