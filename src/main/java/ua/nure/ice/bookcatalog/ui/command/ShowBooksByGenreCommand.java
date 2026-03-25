@@ -19,14 +19,20 @@ public class ShowBooksByGenreCommand implements MenuCommand {
   public void execute() {
     BookGenre genre = inputHelper.readGenre();
     List<Book> books = catalogService.findBooksByGenre(genre);
+
+    System.out.println("Genre filter result");
+    System.out.println("----------------------------------------");
+    System.out.println("Selected genre: " + genre);
+
     if (books.isEmpty()) {
       System.out.println("No books found for selected genre.");
       return;
     }
 
-    System.out.println("Books in genre " + genre + ":");
+    System.out.println("Found books: " + books.size());
+    int index = 1;
     for (Book book : books) {
-      System.out.println(book);
+      System.out.println(index++ + ") " + book);
     }
   }
 

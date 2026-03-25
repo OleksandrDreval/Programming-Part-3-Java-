@@ -14,14 +14,19 @@ public class ShowAllBooksCommand implements MenuCommand {
   @Override
   public void execute() {
     List<Book> books = catalogService.findAllBooks();
+    System.out.println("Catalog overview");
+    System.out.println("----------------------------------------");
+
     if (books.isEmpty()) {
       System.out.println("Catalog is empty.");
       return;
     }
 
+    System.out.println("Total books: " + books.size());
     System.out.println("All books in catalog:");
+    int index = 1;
     for (Book book : books) {
-      System.out.println(book);
+      System.out.println(index++ + ") " + book);
     }
   }
 
