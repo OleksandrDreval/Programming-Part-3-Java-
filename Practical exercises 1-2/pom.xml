@@ -5,13 +5,13 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>ua.nure.ice</groupId>
-  <artifactId>book-catalog</artifactId>
+  <artifactId>book-catalog-practice-1-2</artifactId>
   <version>1.0.0</version>
-  <name>Book Catalog Console App</name>
+  <name>Book Catalog Console App Practice 1-2</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>25</maven.compiler.release>
+    <maven.compiler.release>21</maven.compiler.release>
     <junit.jupiter.version>5.11.4</junit.jupiter.version>
   </properties>
 
@@ -48,6 +48,35 @@
         <configuration>
           <mainClass>ua.nure.ice.bookcatalog.app.App</mainClass>
         </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.14</version>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/jacoco-report</outputDirectory>
+              <formats>
+                <format>HTML</format>
+                <format>XML</format>
+                <format>CSV</format>
+              </formats>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
