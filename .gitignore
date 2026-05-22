@@ -26,6 +26,8 @@ replay_pid*
 # Internal chaos files
 *-SEC.md
 .github/instructions/*.md
-target/*
+
+# Maven build directories (including nested subprojects)
+**/target/
 
 .vscode/*.json
