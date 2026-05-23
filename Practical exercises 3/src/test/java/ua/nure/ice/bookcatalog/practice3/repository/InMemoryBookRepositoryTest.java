@@ -48,7 +48,25 @@ class InMemoryBookRepositoryTest {
     repository.save(new Book("The Hobbit", "J.R.R. Tolkien", 1937, BookGenre.FANTASY));
 
     boolean duplicateFound = repository.findDuplicate("the hobbit", "j.r.r. tolkien", 1937).isPresent();
-
     assertTrue(duplicateFound);
+    
+    boolean duplicateNotFound = repository.findDuplicate("the hobbit", "j.r.r. tolkien", 1938).isPresent();
+    assertFalse(duplicateNotFound);
+  }
+
+  @Test
+  void findByGenreShouldReturnOnlyMatching() {
+    repository.save(new Book("The Hobbit", "J.R.R. Tolkien", 1937, BookGenre.FANTASY));
+    repository.save(new Book("1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION));
+    
+    assertEquals(1, repository.findByGenre(BookGenre.FANTASY).size());
+    assertEquals(0, repository.findByGenre(BookGenre.HISTORY).size());
+  }
+
+  @Test
+  void saveWithExistingIdShouldKeepId() {
+    Book book = new Book(99L, "Test", "Test", 2000, BookGenre.OTHER);
+    Book saved = repository.save(book);
+    assertEquals(99L, saved.getId());
   }
 }

@@ -23,7 +23,6 @@ class ConsoleInputHelperTest {
   @Test
   void readNonEmptyTextShouldThrowWhenBlank() {
     ConsoleInputHelper inputHelper = createInputHelper("   \n");
-
     assertThrows(IllegalArgumentException.class,
         () -> inputHelper.readNonEmptyText("Prompt: "));
   }
@@ -74,8 +73,52 @@ class ConsoleInputHelperTest {
   @Test
   void readGenreShouldThrowWhenIndexOutOfRange() {
     ConsoleInputHelper inputHelper = createInputHelper("99\n");
-
     assertThrows(IllegalArgumentException.class, inputHelper::readGenre);
+    
+    ConsoleInputHelper inputHelper2 = createInputHelper("0\n");
+    assertThrows(IllegalArgumentException.class, inputHelper2::readGenre);
+  }
+
+  @Test
+  void readOptionalTextShouldReturnNullWhenBlank() {
+    ConsoleInputHelper inputHelper = createInputHelper("   \n");
+    org.junit.jupiter.api.Assertions.assertNull(inputHelper.readOptionalText("Prompt: "));
+  }
+
+  @Test
+  void readOptionalTextShouldTrimValue() {
+    ConsoleInputHelper inputHelper = createInputHelper("  text  \n");
+    assertEquals("text", inputHelper.readOptionalText("Prompt: "));
+  }
+
+  @Test
+  void readBooleanShouldReturnTrueForY() {
+    ConsoleInputHelper inputHelper = createInputHelper(" Y \n");
+    org.junit.jupiter.api.Assertions.assertTrue(inputHelper.readBoolean("Prompt: "));
+  }
+
+  @Test
+  void readBooleanShouldReturnFalseForBlank() {
+    ConsoleInputHelper inputHelper = createInputHelper(" \n");
+    org.junit.jupiter.api.Assertions.assertFalse(inputHelper.readBoolean("Prompt: "));
+  }
+
+  @Test
+  void readBooleanShouldReturnTrueForYes() {
+    ConsoleInputHelper inputHelper = createInputHelper("yes\n");
+    org.junit.jupiter.api.Assertions.assertTrue(inputHelper.readBoolean("Prompt: "));
+  }
+
+  @Test
+  void readBooleanShouldReturnTrueForTrue() {
+    ConsoleInputHelper inputHelper = createInputHelper("true\n");
+    org.junit.jupiter.api.Assertions.assertTrue(inputHelper.readBoolean("Prompt: "));
+  }
+
+  @Test
+  void readBooleanShouldReturnFalseForNo() {
+    ConsoleInputHelper inputHelper = createInputHelper(" n \n");
+    org.junit.jupiter.api.Assertions.assertFalse(inputHelper.readBoolean("Prompt: "));
   }
 
   private ConsoleInputHelper createInputHelper(String input) {

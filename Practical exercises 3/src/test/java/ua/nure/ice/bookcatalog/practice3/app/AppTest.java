@@ -38,4 +38,10 @@ class AppTest {
     assertTrue(output.contains("Welcome to Book Catalog"));
     assertTrue(output.contains("Goodbye."));
   }
+  
+  @Test
+  void constructorShouldNotThrow() {
+    App app = new App();
+    org.junit.jupiter.api.Assertions.assertNotNull(app);
+  }
 }

@@ -58,6 +58,8 @@ class CatalogServiceTest {
   void addBookShouldThrowOnInvalidData() {
     assertThrows(InvalidBookDataException.class,
         () -> catalogService.addBook("", "Author", 2020, BookGenre.FICTION));
+    assertThrows(InvalidBookDataException.class,
+        () -> catalogService.addBook(null, "Author", 2020, BookGenre.FICTION));
   }
 
   @Test
@@ -76,9 +78,11 @@ class CatalogServiceTest {
   }
 
   @Test
-  void addBookShouldThrowWhenAuthorIsBlank() {
+  void addBookShouldThrowWhenAuthorIsBlankOrNull() {
     assertThrows(InvalidBookDataException.class,
         () -> catalogService.addBook("Dune", "  ", 1965, BookGenre.FICTION));
+    assertThrows(InvalidBookDataException.class,
+        () -> catalogService.addBook("Dune", null, 1965, BookGenre.FICTION));
   }
 
   @Test
