@@ -10,6 +10,7 @@ import ua.nure.ice.bookcatalog.practice3.ui.command.MenuCommand;
 import ua.nure.ice.bookcatalog.practice3.ui.command.RemoveBookCommand;
 import ua.nure.ice.bookcatalog.practice3.ui.command.ShowAllBooksCommand;
 import ua.nure.ice.bookcatalog.practice3.ui.command.ShowBooksByGenreCommand;
+import ua.nure.ice.bookcatalog.practice3.ui.command.CreateOrderCommand;
 
 public class ConsoleUI {
   private static final String SECTION_SEPARATOR = "========================================";
@@ -28,6 +29,7 @@ public class ConsoleUI {
     this.commandByOption.put("2", new RemoveBookCommand(catalogService, inputHelper));
     this.commandByOption.put("3", new ShowAllBooksCommand(catalogService));
     this.commandByOption.put("4", new ShowBooksByGenreCommand(catalogService, inputHelper));
+    this.commandByOption.put("5", new CreateOrderCommand(catalogService, inputHelper));
     this.commandByOption.put("0", new ExitCommand(this::stop));
 
     this.running = true;

@@ -13,7 +13,7 @@ public class ConsoleInputHelper {
   public String readNonEmptyText(String prompt) {
     System.out.print(prompt);
     String input = scanner.nextLine();
-    if (input == null || input.isBlank()) {
+    if (input.isBlank()) {
       throw new IllegalArgumentException("Input must not be empty.");
     }
     return input.trim();
@@ -52,5 +52,24 @@ public class ConsoleInputHelper {
     }
 
     return genres[choice - 1];
+  }
+
+  public String readOptionalText(String prompt) {
+    System.out.print(prompt);
+    String input = scanner.nextLine();
+    if (input.isBlank()) {
+      return null;
+    }
+    return input.trim();
+  }
+
+  public boolean readBoolean(String prompt) {
+    System.out.print(prompt);
+    String input = scanner.nextLine();
+    if (input.isBlank()) {
+      return false;
+    }
+    input = input.trim().toLowerCase();
+    return input.equals("y") || input.equals("yes") || input.equals("true");
   }
 }
