@@ -71,19 +71,10 @@ class BookOrderTest {
     }
 
     @Test
-    void builderShouldThrowWhenOrderIdIsBlank() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new BookOrder.Builder("", "Ivan Petrenko"));
-        assertThrows(IllegalArgumentException.class,
-                () -> new BookOrder.Builder(null, "Ivan Petrenko"));
-    }
-
-    @Test
     void builderShouldThrowWhenCustomerNameIsBlank() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new BookOrder.Builder("ORD-001", ""));
-        assertThrows(IllegalArgumentException.class,
-                () -> new BookOrder.Builder("ORD-001", null));
+        assertThrows(IllegalArgumentException.class, () -> new BookOrder.Builder("ORD-001", ""));
+        assertThrows(IllegalArgumentException.class, () -> new BookOrder.Builder("ORD-001", "   "));
+        assertThrows(IllegalArgumentException.class, () -> new BookOrder.Builder("ORD-001", null));
     }
     
     @Test

@@ -1,15 +1,13 @@
 package ua.nure.ice.bookcatalog.laboratorna1.app;
 
-import ua.nure.ice.bookcatalog.laboratorna1.repository.BookRepository;
-import ua.nure.ice.bookcatalog.laboratorna1.repository.InMemoryBookRepository;
-import ua.nure.ice.bookcatalog.laboratorna1.service.CatalogService;
-import ua.nure.ice.bookcatalog.laboratorna1.ui.ConsoleUI;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
+@SpringBootApplication
+@ComponentScan(basePackages = "ua.nure.ice.bookcatalog.laboratorna1")
 public class App {
   public static void main(String[] args) {
-    BookRepository bookRepository = new InMemoryBookRepository();
-    CatalogService catalogService = new CatalogService(bookRepository);
-    ConsoleUI consoleUI = new ConsoleUI(catalogService);
-    consoleUI.start();
+    SpringApplication.run(App.class, args);
   }
 }

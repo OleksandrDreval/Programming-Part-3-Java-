@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Catalog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Book Catalog</h1>
+    
+    <section>
+        <h2>Book List</h2>
+        <button onclick="loadBooks()">Load Books</button>
+        <ul id="bookList"></ul>
+    </section>
+
+    <section>
+        <h2>Add Book</h2>
+        <input type="text" id="title" placeholder="Title">
+        <input type="text" id="author" placeholder="Author">
+        <input type="number" id="year" placeholder="Publication Year">
+        <select id="genre">
+            <option value="FICTION">Fiction (FICTION)</option>
+            <option value="NON_FICTION">Non-Fiction (NON_FICTION)</option>
+            <option value="SCIENCE_FICTION">Science Fiction (SCIENCE_FICTION)</option>
+            <option value="FANTASY">Fantasy (FANTASY)</option>
+            <option value="DETECTIVE">Detective (DETECTIVE)</option>
+            <option value="HISTORY">History (HISTORY)</option>
+        </select>
+        <button onclick="createBook()">Add</button>
+    </section>
+
+    <section>
+        <h2>Create Order</h2>
+        <input type="text" id="customerName" placeholder="Your Name">
+        <input type="number" id="bookId" placeholder="Book ID">
+        <input type="text" id="city" placeholder="Delivery City">
+        <input type="text" id="street" placeholder="Street">
+        <button onclick="createOrder()">Order</button>
+    </section>
+
+    <section>
+        <h2>Order List</h2>
+        <button onclick="loadOrders()">Load Orders</button>
+        <ul id="orderList"></ul>
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>

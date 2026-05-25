@@ -1,5 +1,7 @@
 package ua.nure.ice.bookcatalog.laboratorna1.service;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.Objects;
 import ua.nure.ice.bookcatalog.laboratorna1.exception.BookNotFoundException;
@@ -9,6 +11,7 @@ import ua.nure.ice.bookcatalog.laboratorna1.model.Book;
 import ua.nure.ice.bookcatalog.laboratorna1.model.BookGenre;
 import ua.nure.ice.bookcatalog.laboratorna1.repository.BookRepository;
 
+@Service
 public class CatalogService {
   private final BookRepository bookRepository;
 

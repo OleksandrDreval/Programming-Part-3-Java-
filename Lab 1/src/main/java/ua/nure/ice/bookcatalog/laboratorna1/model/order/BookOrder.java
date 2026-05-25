@@ -6,13 +6,16 @@ import java.util.List;
 import ua.nure.ice.bookcatalog.laboratorna1.model.Book;
 
 public class BookOrder {
-    private final String orderId;
-    private final String customerName;
-    private final List<Book> books;
-    private final DeliveryAddress deliveryAddress;
-    private final String orderComment;
-    private final boolean isUrgent;
-    private final String paymentMethod;
+    private String orderId;
+    private String customerName;
+    private List<Book> books;
+    private DeliveryAddress deliveryAddress;
+    private String orderComment;
+    private boolean isUrgent;
+    private String paymentMethod;
+    private OrderStatus status;
+
+    public BookOrder() {}
 
     private BookOrder(Builder builder) {
         this.orderId = builder.orderId;
@@ -22,6 +25,7 @@ public class BookOrder {
         this.orderComment = builder.orderComment;
         this.isUrgent = builder.isUrgent;
         this.paymentMethod = builder.paymentMethod;
+        this.status = builder.status;
     }
 
     public String getOrderId() {
@@ -50,6 +54,14 @@ public class BookOrder {
 
     public String getPaymentMethod() {
         return paymentMethod;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
     }
 
     @Override
@@ -90,11 +102,9 @@ public class BookOrder {
         private String orderComment;
         private boolean isUrgent = false;
         private String paymentMethod;
+        private OrderStatus status = OrderStatus.NEW;
 
         public Builder(String orderId, String customerName) {
-            if (orderId == null || orderId.trim().isEmpty()) {
-                throw new IllegalArgumentException("Order ID cannot be null or empty");
-            }
             if (customerName == null || customerName.trim().isEmpty()) {
                 throw new IllegalArgumentException("Customer name cannot be null or empty");
             }
@@ -134,6 +144,11 @@ public class BookOrder {
 
         public Builder paymentMethod(String paymentMethod) {
             this.paymentMethod = paymentMethod;
+            return this;
+        }
+
+        public Builder status(OrderStatus status) {
+            this.status = status;
             return this;
         }
 

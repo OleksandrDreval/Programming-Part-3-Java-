@@ -3,6 +3,7 @@ package ua.nure.ice.bookcatalog.laboratorna1.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -68,5 +69,26 @@ class InMemoryBookRepositoryTest {
     Book book = new Book(99L, "Test", "Test", 2000, BookGenre.OTHER);
     Book saved = repository.save(book);
     assertEquals(99L, saved.getId());
+  }
+
+  @Test
+  void saveShouldThrowWhenBookIsNull() {
+      assertThrows(NullPointerException.class, () -> repository.save(null));
+  }
+
+  @Test
+  void findByIdShouldReturnEmptyWhenNotExists() {
+      assertFalse(repository.findById(999L).isPresent());
+  }
+
+  @Test
+  void findByIdShouldReturnBookWhenExists() {
+      Book saved = repository.save(new Book("Title", "Author", 2020, BookGenre.FICTION));
+      assertTrue(repository.findById(saved.getId()).isPresent());
+  }
+
+  @Test
+  void findByGenreShouldThrowWhenGenreIsNull() {
+      assertThrows(NullPointerException.class, () -> repository.findByGenre(null));
   }
 }

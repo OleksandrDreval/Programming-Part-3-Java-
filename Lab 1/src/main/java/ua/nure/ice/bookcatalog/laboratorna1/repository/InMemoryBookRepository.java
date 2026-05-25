@@ -1,5 +1,7 @@
 package ua.nure.ice.bookcatalog.laboratorna1.repository;
 
+import org.springframework.stereotype.Repository;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +12,7 @@ import java.util.Optional;
 import ua.nure.ice.bookcatalog.laboratorna1.model.Book;
 import ua.nure.ice.bookcatalog.laboratorna1.model.BookGenre;
 
+@Repository
 public class InMemoryBookRepository implements BookRepository {
   private final Map<Long, Book> booksById;
   private long nextId;

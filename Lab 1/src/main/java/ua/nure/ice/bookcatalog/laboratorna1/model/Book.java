@@ -7,11 +7,13 @@ public final class Book {
   private static final int MIN_PUBLICATION_YEAR = 1450;
   private static final int MAX_PUBLICATION_YEAR_OFFSET = 1;
 
-  private final long id;
-  private final String title;
-  private final String author;
-  private final int publicationYear;
-  private final BookGenre genre;
+  private long id;
+  private String title;
+  private String author;
+  private int publicationYear;
+  private BookGenre genre;
+
+  public Book() {}
 
   public Book(long id, String title, String author, int publicationYear, BookGenre genre) {
     this.id = validateId(id);

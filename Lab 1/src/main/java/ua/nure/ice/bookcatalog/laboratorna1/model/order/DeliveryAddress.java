@@ -1,13 +1,15 @@
 package ua.nure.ice.bookcatalog.laboratorna1.model.order;
 
 public class DeliveryAddress {
-    private final String country;
-    private final String city;
-    private final String street;
-    private final String buildingNumber;
-    private final String apartmentNumber;
-    private final String postalCode;
-    private final String additionalDetails;
+    private String country;
+    private String city;
+    private String street;
+    private String buildingNumber;
+    private String apartmentNumber;
+    private String postalCode;
+    private String additionalDetails;
+
+    public DeliveryAddress() {}
 
     private DeliveryAddress(Builder builder) {
         this.country = builder.country;

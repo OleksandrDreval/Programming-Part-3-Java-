@@ -113,6 +113,33 @@ class CreateOrderCommandTest {
   }
 
   @Test
+  void executeShouldHandleAddressWithBlankOptionals() {
+    catalogService.addBook("Dune", "Frank Herbert", 1965, BookGenre.SCIENCE_FICTION);
+    String input = "ORD-004\n" +      // Order ID
+                   "Max\n" +          // Customer Name
+                   "0\n" +            // Finish books
+                   "y\n" +            // Yes to address
+                   "UA\n" +           // Country
+                   "Lviv\n" +         // City
+                   "Franka\n" +       // Street
+                   "2\n" +            // Building
+                   "\n" +             // Blank apartment
+                   "\n" +             // Blank postal code
+                   "\n" +             // Blank details
+                   "n\n" +            // Not urgent
+                   "\n" +             // Blank payment
+                   "\n" +             // Blank comment
+                   "n\n";             // No notification
+
+    ConsoleInputHelper inputHelper = createInputHelper(input);
+    CreateOrderCommand command = new CreateOrderCommand(catalogService, inputHelper);
+    
+    assertDoesNotThrow(command::execute);
+    String output = outputStream.toString(StandardCharsets.UTF_8);
+    assertTrue(output.contains("Order Successfully Created"));
+  }
+
+  @Test
   void executeShouldHandleIllegalArgumentException() {
     // Empty Order ID throws IllegalArgumentException in readNonEmptyText
     String input = "\n"; 
