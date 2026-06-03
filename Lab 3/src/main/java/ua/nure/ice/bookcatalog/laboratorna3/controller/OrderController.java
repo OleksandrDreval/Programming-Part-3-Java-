@@ -25,7 +25,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<BookOrder> getOrderById(@PathVariable Long id) {
+    public ResponseEntity<BookOrder> getOrderById(@PathVariable String id) {
         try {
             return ResponseEntity.ok(orderService.findOrderById(id));
         } catch (IllegalArgumentException e) {
@@ -46,7 +46,7 @@ public class OrderController {
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<?> updateOrderStatus(@PathVariable Long id, @RequestParam OrderStatus status) {
+    public ResponseEntity<?> updateOrderStatus(@PathVariable String id, @RequestParam OrderStatus status) {
         try {
             BookOrder updated = orderService.updateOrderStatus(id, status);
             return ResponseEntity.ok(updated);
@@ -58,7 +58,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteOrder(@PathVariable String id) {
         try {
             orderService.deleteOrder(id);
             return ResponseEntity.noContent().build();

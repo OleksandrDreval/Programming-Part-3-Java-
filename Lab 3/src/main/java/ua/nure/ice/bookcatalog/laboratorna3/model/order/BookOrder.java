@@ -5,46 +5,20 @@ import java.util.Collections;
 import java.util.List;
 import ua.nure.ice.bookcatalog.laboratorna3.model.Book;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "book_orders")
 public class BookOrder {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false, length = 100)
+    private String orderId;
     private String customerName;
-    
-    @ManyToMany
-    @JoinTable(
-        name = "book_order_books",
-        joinColumns = @JoinColumn(name = "order_id"),
-        inverseJoinColumns = @JoinColumn(name = "book_id")
-    )
     private List<Book> books;
-    
-    @Embedded
     private DeliveryAddress deliveryAddress;
-    
-    @Column(length = 500)
     private String orderComment;
-    
-    @Column(nullable = false)
     private boolean isUrgent;
-    
-    @Column(length = 100)
     private String paymentMethod;
-    
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
     private OrderStatus status;
 
     public BookOrder() {}
 
     private BookOrder(Builder builder) {
-        this.id = builder.id;
+        this.orderId = builder.orderId;
         this.customerName = builder.customerName;
         this.books = Collections.unmodifiableList(new ArrayList<>(builder.books));
         this.deliveryAddress = builder.deliveryAddress;
@@ -54,8 +28,8 @@ public class BookOrder {
         this.status = builder.status;
     }
 
-    public Long getId() {
-        return id;
+    public String getOrderId() {
+        return orderId;
     }
 
     public String getCustomerName() {
@@ -93,7 +67,7 @@ public class BookOrder {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Order #").append(id).append("\n");
+        sb.append("Order #").append(orderId).append("\n");
         sb.append("Customer: ").append(customerName).append("\n");
         sb.append("Urgent: ").append(isUrgent ? "Yes" : "No").append("\n");
         sb.append("Payment Method: ").append(paymentMethod != null ? paymentMethod : "Not specified").append("\n");
@@ -119,7 +93,7 @@ public class BookOrder {
 
     public static class Builder {
         // Required fields
-        private Long id;
+        private final String orderId;
         private final String customerName;
 
         // Optional fields
@@ -130,17 +104,13 @@ public class BookOrder {
         private String paymentMethod;
         private OrderStatus status = OrderStatus.NEW;
 
-        public Builder(Long id, String customerName) {
+        public Builder(String orderId, String customerName) {
             if (customerName == null || customerName.trim().isEmpty()) {
                 throw new IllegalArgumentException("Customer name cannot be null or empty");
             }
 
-            this.id = id;
+            this.orderId = orderId;
             this.customerName = customerName;
-        }
-
-        public Builder(String customerName) {
-            this(null, customerName);
         }
 
         public Builder addBook(Book book) {

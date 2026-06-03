@@ -4,10 +4,9 @@ import ua.nure.ice.bookcatalog.laboratorna3.model.order.BookOrder;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface OrderRepository extends JpaRepository<BookOrder, Long> {
-    boolean existsByBooks_Id(Long bookId);
+public interface OrderRepository {
+    BookOrder save(BookOrder order);
+    Optional<BookOrder> findById(String id);
+    List<BookOrder> findAll();
+    boolean deleteById(String id);
 }

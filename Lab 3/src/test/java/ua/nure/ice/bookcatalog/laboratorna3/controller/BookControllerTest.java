@@ -1,136 +1,129 @@
 package ua.nure.ice.bookcatalog.laboratorna3.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import ua.nure.ice.bookcatalog.laboratorna3.exception.BookNotFoundException;
-import ua.nure.ice.bookcatalog.laboratorna3.exception.InvalidBookDataException;
 import ua.nure.ice.bookcatalog.laboratorna3.model.Book;
 import ua.nure.ice.bookcatalog.laboratorna3.model.BookGenre;
 import ua.nure.ice.bookcatalog.laboratorna3.service.CatalogService;
 
-@WebMvcTest(BookController.class)
+import java.util.Collections;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import ua.nure.ice.bookcatalog.laboratorna3.app.App;
+
+@WebMvcTest(controllers = BookController.class)
+@ContextConfiguration(classes = App.class)
 class BookControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private CatalogService catalogService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
-    private Book validBook;
-
-    @BeforeEach
-    void setUp() {
-        validBook = new Book(1L, "Test Title", "Test Author", 2023, BookGenre.FICTION);
-    }
-
     @Test
-    void getAllBooks_returnsOk() throws Exception {
-        when(catalogService.findAllBooks()).thenReturn(List.of(validBook));
+    void getAllBooks_ShouldReturnBooks() throws Exception {
+        Book book = new Book(1L, "1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION);
+        when(catalogService.findAllBooks()).thenReturn(Collections.singletonList(book));
+
         mockMvc.perform(get("/api/books"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Test Title"));
+                .andExpect(jsonPath("$[0].title").value("1984"));
     }
 
     @Test
-    void getBookById_found_returnsOk() throws Exception {
-        when(catalogService.findAllBooks()).thenReturn(List.of(validBook));
+    void getBookById_ShouldReturnBook_WhenFound() throws Exception {
+        Book book = new Book(1L, "1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION);
+        when(catalogService.findAllBooks()).thenReturn(Collections.singletonList(book));
+
         mockMvc.perform(get("/api/books/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Test Title"));
+                .andExpect(jsonPath("$.title").value("1984"));
     }
 
     @Test
-    void getBookById_notFound_returns404() throws Exception {
-        when(catalogService.findAllBooks()).thenReturn(List.of(validBook));
-        mockMvc.perform(get("/api/books/2"))
+    void getBookById_ShouldReturn404_WhenNotFound() throws Exception {
+        when(catalogService.findAllBooks()).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/books/1"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    void createBook_valid_returnsCreated() throws Exception {
-        when(catalogService.addBook(anyString(), anyString(), anyInt(), any(BookGenre.class))).thenReturn(validBook);
-
-        mockMvc.perform(post("/api/books")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validBook)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.title").value("Test Title"));
-    }
-
-    @Test
-    void createBook_invalid_returnsBadRequest() throws Exception {
+    void createBook_ShouldReturn201() throws Exception {
+        Book newBook = new Book(1L, "1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION);
         when(catalogService.addBook(anyString(), anyString(), anyInt(), any(BookGenre.class)))
-                .thenThrow(new InvalidBookDataException("Invalid"));
+                .thenReturn(newBook);
+
+        Book requestBook = new Book(0L, "1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION);
 
         mockMvc.perform(post("/api/books")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validBook)))
+                .content(objectMapper.writeValueAsString(requestBook)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(1L));
+    }
+
+    @Test
+    void createBook_ShouldReturn400_OnError() throws Exception {
+        when(catalogService.addBook(anyString(), anyString(), anyInt(), any(BookGenre.class)))
+                .thenThrow(new IllegalArgumentException("Invalid"));
+
+        Book requestBook = new Book(0L, "Valid Title", "Valid Author", 1949, BookGenre.SCIENCE_FICTION);
+
+        mockMvc.perform(post("/api/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(requestBook)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void updateBook_success_returnsOk() throws Exception {
-        when(catalogService.updateBook(anyLong(), anyString(), anyString(), anyInt(), any(BookGenre.class)))
-                .thenReturn(validBook);
+    void updateBook_ShouldReturn200() throws Exception {
+        Book updatedBook = new Book(2L, "1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION);
+        doNothing().when(catalogService).removeBook(1L);
+        when(catalogService.addBook(anyString(), anyString(), anyInt(), any(BookGenre.class)))
+                .thenReturn(updatedBook);
+
+        Book requestBook = new Book(0L, "1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION);
 
         mockMvc.perform(put("/api/books/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validBook)))
+                .content(objectMapper.writeValueAsString(requestBook)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Test Title"));
+                .andExpect(jsonPath("$.id").value(2L));
     }
 
     @Test
-    void updateBook_notFound_returns404() throws Exception {
-        when(catalogService.updateBook(anyLong(), anyString(), anyString(), anyInt(), any(BookGenre.class)))
-                .thenThrow(new BookNotFoundException("Not found"));
+    void updateBook_ShouldReturn404_WhenRemoveFails() throws Exception {
+        doThrow(new IllegalArgumentException("Not found")).when(catalogService).removeBook(1L);
+
+        Book requestBook = new Book(0L, "1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION);
 
         mockMvc.perform(put("/api/books/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validBook)))
+                .content(objectMapper.writeValueAsString(requestBook)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    void updateBook_invalid_returnsBadRequest() throws Exception {
-        when(catalogService.updateBook(anyLong(), anyString(), anyString(), anyInt(), any(BookGenre.class)))
-                .thenThrow(new InvalidBookDataException("Invalid"));
-
-        mockMvc.perform(put("/api/books/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validBook)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    void deleteBook_success_returnsNoContent() throws Exception {
+    void deleteBook_ShouldReturn204() throws Exception {
         doNothing().when(catalogService).removeBook(1L);
 
         mockMvc.perform(delete("/api/books/1"))
@@ -138,8 +131,8 @@ class BookControllerTest {
     }
 
     @Test
-    void deleteBook_exception_returnsNotFound() throws Exception {
-        doThrow(new BookNotFoundException("Not found")).when(catalogService).removeBook(1L);
+    void deleteBook_ShouldReturn404_WhenFails() throws Exception {
+        doThrow(new IllegalArgumentException("Not found")).when(catalogService).removeBook(1L);
 
         mockMvc.perform(delete("/api/books/1"))
                 .andExpect(status().isNotFound());

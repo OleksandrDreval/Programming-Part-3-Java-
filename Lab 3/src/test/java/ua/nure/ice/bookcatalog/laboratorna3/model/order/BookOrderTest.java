@@ -1,6 +1,10 @@
 package ua.nure.ice.bookcatalog.laboratorna3.model.order;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
@@ -13,66 +17,96 @@ import ua.nure.ice.bookcatalog.laboratorna3.model.BookGenre;
 class BookOrderTest {
 
     @Test
-    void testEmptyConstructor() {
-        BookOrder order = new BookOrder();
-        assertNotNull(order);
-    }
+    void builderShouldCreateValidOrder() {
+        Book book1 = new Book(1, "The Hobbit", "J.R.R. Tolkien", 1937, BookGenre.FANTASY);
+        Book book2 = new Book(2, "1984", "George Orwell", 1949, BookGenre.SCIENCE_FICTION);
 
-    @Test
-    void testToString_WithAllFields() {
-        Book book = new Book(1L, "Test Title", "Author", 2023, BookGenre.FICTION);
-        DeliveryAddress address = new DeliveryAddress.Builder("Country", "City", "Street", "1")
-                .postalCode("00000")
-                .build();
-        
-        BookOrder order = new BookOrder.Builder(1L, "John Doe")
-                .addBook(book)
+        DeliveryAddress address = new DeliveryAddress.Builder("Ukraine", "Kyiv", "Khreshchatyk", "1").build();
+
+        BookOrder order = new BookOrder.Builder("ORD-001", "Ivan Petrenko")
+                .addBook(book1)
+                .addBook(book2)
                 .deliveryAddress(address)
-                .orderComment("Please deliver fast")
                 .isUrgent(true)
                 .paymentMethod("Credit Card")
-                .status(OrderStatus.APPROVED)
+                .orderComment("Please call before delivery")
                 .build();
-                
-        String toString = order.toString();
-        assertTrue(toString.contains("Order #1"));
-        assertTrue(toString.contains("Customer: John Doe"));
-        assertTrue(toString.contains("Urgent: Yes"));
-        assertTrue(toString.contains("Payment Method: Credit Card"));
-        assertTrue(toString.contains("Comment: Please deliver fast"));
-        assertTrue(toString.contains("Country"));
-        assertTrue(toString.contains("Test Title by Author"));
+
+        assertEquals("ORD-001", order.getOrderId());
+        assertEquals("Ivan Petrenko", order.getCustomerName());
+        assertEquals(2, order.getBooks().size());
+        assertEquals("The Hobbit", order.getBooks().get(0).getTitle());
+        assertEquals("1984", order.getBooks().get(1).getTitle());
+        assertNotNull(order.getDeliveryAddress());
+        assertTrue(order.isUrgent());
+        assertEquals("Credit Card", order.getPaymentMethod());
+        assertEquals("Please call before delivery", order.getOrderComment());
         
-        order.setStatus(OrderStatus.COMPLETED);
-        assertTrue(order.getStatus() == OrderStatus.COMPLETED);
+        String toString = order.toString();
+        assertTrue(toString.contains("ORD-001"));
+        assertTrue(toString.contains("Ivan Petrenko"));
+        assertTrue(toString.contains("Credit Card"));
+        assertTrue(toString.contains("Please call before delivery"));
+        assertTrue(toString.contains("The Hobbit"));
+        assertTrue(toString.contains("1984"));
     }
 
     @Test
-    void testToString_WithMissingFields() {
-        BookOrder order = new BookOrder.Builder("Jane Doe")
-                .books(List.of())
-                .isUrgent(false)
-                .build();
-                
+    void builderShouldCreateOrderWithOnlyRequiredFields() {
+        BookOrder order = new BookOrder.Builder("ORD-002", "Olena").build();
+
+        assertEquals("ORD-002", order.getOrderId());
+        assertEquals("Olena", order.getCustomerName());
+        assertTrue(order.getBooks().isEmpty());
+        assertNull(order.getDeliveryAddress());
+        assertFalse(order.isUrgent());
+        assertNull(order.getPaymentMethod());
+        assertNull(order.getOrderComment());
+        
         String toString = order.toString();
-        assertTrue(toString.contains("Customer: Jane Doe"));
-        assertTrue(toString.contains("Urgent: No"));
-        assertTrue(toString.contains("Payment Method: Not specified"));
+        assertTrue(toString.contains("ORD-002"));
+        assertTrue(toString.contains("Olena"));
         assertTrue(toString.contains("Not specified"));
         assertTrue(toString.contains("No books in order"));
     }
 
     @Test
-    void testBuilderNulls() {
-        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> new BookOrder.Builder(null));
-        org.junit.jupiter.api.Assertions.assertThrows(IllegalArgumentException.class, () -> new BookOrder.Builder("   "));
-
-        BookOrder order = new BookOrder.Builder("Jane Doe")
+    void builderShouldThrowWhenCustomerNameIsBlank() {
+        assertThrows(IllegalArgumentException.class, () -> new BookOrder.Builder("ORD-001", ""));
+        assertThrows(IllegalArgumentException.class, () -> new BookOrder.Builder("ORD-001", "   "));
+        assertThrows(IllegalArgumentException.class, () -> new BookOrder.Builder("ORD-001", null));
+    }
+    
+    @Test
+    void builderShouldHandleNullAdditions() {
+        BookOrder order = new BookOrder.Builder("ORD-003", "Test")
                 .addBook(null)
                 .books(null)
-                .orderComment("")
                 .build();
+                
         assertTrue(order.getBooks().isEmpty());
-        assertTrue(order.toString().contains("Jane Doe"));
+    }
+    
+    @Test
+    void builderShouldHandleBooksList() {
+        Book book1 = new Book(1, "The Hobbit", "J.R.R. Tolkien", 1937, BookGenre.FANTASY);
+        BookOrder order = new BookOrder.Builder("ORD-004", "Test")
+                .books(List.of(book1))
+                .build();
+                
+        assertEquals(1, order.getBooks().size());
+        assertEquals("The Hobbit", order.getBooks().get(0).getTitle());
+    }
+    
+    @Test
+    void builderShouldHandleEmptyOptionalFields() {
+        BookOrder order = new BookOrder.Builder("ORD-005", "Test")
+                .orderComment("")
+                .paymentMethod("")
+                .build();
+                
+        String toString = order.toString();
+        assertFalse(toString.contains("Comment:"));
+        assertTrue(toString.contains("Payment Method: "));
     }
 }

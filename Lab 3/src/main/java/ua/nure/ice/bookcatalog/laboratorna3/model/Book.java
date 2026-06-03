@@ -3,29 +3,14 @@ package ua.nure.ice.bookcatalog.laboratorna3.model;
 import java.time.Year;
 import java.util.Objects;
 
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "books")
-public class Book {
+public final class Book {
   private static final int MIN_PUBLICATION_YEAR = 1450;
   private static final int MAX_PUBLICATION_YEAR_OFFSET = 1;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
-  
-  @Column(nullable = false, length = 200)
   private String title;
-  
-  @Column(nullable = false, length = 200)
   private String author;
-  
-  @Column(nullable = false)
   private int publicationYear;
-  
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false, length = 50)
   private BookGenre genre;
 
   public Book() {}
@@ -54,32 +39,16 @@ public class Book {
     return title;
   }
 
-  public void setTitle(String title) {
-    this.title = validateText(title, "Title");
-  }
-
   public String getAuthor() {
     return author;
-  }
-
-  public void setAuthor(String author) {
-    this.author = validateText(author, "Author");
   }
 
   public int getPublicationYear() {
     return publicationYear;
   }
 
-  public void setPublicationYear(int publicationYear) {
-    this.publicationYear = validatePublicationYear(publicationYear);
-  }
-
   public BookGenre getGenre() {
     return genre;
-  }
-
-  public void setGenre(BookGenre genre) {
-    this.genre = Objects.requireNonNull(genre, "Genre must not be null.");
   }
 
   @Override

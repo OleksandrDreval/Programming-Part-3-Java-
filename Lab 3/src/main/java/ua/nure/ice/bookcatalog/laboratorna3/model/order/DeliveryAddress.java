@@ -1,9 +1,5 @@
 package ua.nure.ice.bookcatalog.laboratorna3.model.order;
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Column;
-
-@Embeddable
 public class DeliveryAddress {
     private String country;
     private String city;

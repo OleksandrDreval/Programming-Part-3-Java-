@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 @Service
-@Transactional(readOnly = true)
 public class OrderService {
     private final OrderRepository orderRepository;
     private final BookRepository bookRepository;
@@ -28,12 +25,11 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
-    public BookOrder findOrderById(Long id) {
+    public BookOrder findOrderById(String id) {
         return orderRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found: " + id));
     }
 
-    @Transactional
     public BookOrder createOrder(BookOrder orderRequest) {
         if (orderRequest.getBooks() == null || orderRequest.getBooks().isEmpty()) {
             throw new IllegalArgumentException("Order must contain at least one book.");
@@ -61,7 +57,11 @@ public class OrderService {
             }
         }
 
-        BookOrder newOrder = new BookOrder.Builder(orderRequest.getCustomerName())
+        String orderId = (orderRequest.getOrderId() == null || orderRequest.getOrderId().isBlank()) 
+                ? UUID.randomUUID().toString() 
+                : orderRequest.getOrderId();
+
+        BookOrder newOrder = new BookOrder.Builder(orderId, orderRequest.getCustomerName())
                 .books(orderRequest.getBooks())
                 .deliveryAddress(orderRequest.getDeliveryAddress())
                 .orderComment(orderRequest.getOrderComment())
@@ -73,23 +73,28 @@ public class OrderService {
         return orderRepository.save(newOrder);
     }
 
-    @Transactional
-    public BookOrder updateOrderStatus(Long id, OrderStatus newStatus) {
+    public BookOrder updateOrderStatus(String id, OrderStatus newStatus) {
         BookOrder existing = findOrderById(id);
 
         if (existing.getStatus() == OrderStatus.CANCELLED) {
             throw new IllegalStateException("Cannot change status of a cancelled order");
         }
 
-        existing.setStatus(newStatus);
-        return orderRepository.save(existing);
+        BookOrder updatedOrder = new BookOrder.Builder(existing.getOrderId(), existing.getCustomerName())
+                .books(existing.getBooks())
+                .deliveryAddress(existing.getDeliveryAddress())
+                .orderComment(existing.getOrderComment())
+                .isUrgent(existing.isUrgent())
+                .paymentMethod(existing.getPaymentMethod())
+                .status(newStatus)
+                .build();
+
+        return orderRepository.save(updatedOrder);
     }
 
-    @Transactional
-    public void deleteOrder(Long id) {
-        if (!orderRepository.existsById(id)) {
+    public void deleteOrder(String id) {
+        if (!orderRepository.deleteById(id)) {
             throw new IllegalArgumentException("Order not found: " + id);
         }
-        orderRepository.deleteById(id);
     }
 }
