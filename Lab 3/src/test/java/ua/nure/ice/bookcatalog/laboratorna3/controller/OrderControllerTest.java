@@ -4,8 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import ua.nure.ice.bookcatalog.laboratorna3.model.Book;
 import ua.nure.ice.bookcatalog.laboratorna3.model.BookGenre;
@@ -24,9 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ua.nure.ice.bookcatalog.laboratorna3.app.App;
+import ua.nure.ice.bookcatalog.laboratorna3.config.SecurityConfig;
 
 @WebMvcTest(controllers = OrderController.class)
 @ContextConfiguration(classes = App.class)
+@Import(SecurityConfig.class)
 class OrderControllerTest {
 
     @Autowired
@@ -39,6 +42,7 @@ class OrderControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @WithMockUser(roles = "USER")
     void getAllOrders_ShouldReturnOrders() throws Exception {
         BookOrder order = new BookOrder.Builder("ORD-1", "Alice").build();
         when(orderService.findAllOrders()).thenReturn(Collections.singletonList(order));
@@ -49,6 +53,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void getOrderById_ShouldReturnOrder_WhenFound() throws Exception {
         BookOrder order = new BookOrder.Builder("ORD-1", "Alice").build();
         when(orderService.findOrderById("ORD-1")).thenReturn(order);
@@ -59,6 +64,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void getOrderById_ShouldReturn404_WhenNotFound() throws Exception {
         when(orderService.findOrderById("UNKNOWN")).thenThrow(new IllegalArgumentException("Not found"));
 
@@ -67,6 +73,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void createOrder_ShouldReturn201() throws Exception {
         BookOrder order = new BookOrder.Builder("ORD-1", "Alice").build();
         when(orderService.createOrder(any(BookOrder.class))).thenReturn(order);
@@ -79,6 +86,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void createOrder_ShouldReturn409_OnConflict() throws Exception {
         when(orderService.createOrder(any(BookOrder.class))).thenThrow(new IllegalStateException("Conflict"));
 
@@ -91,6 +99,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void createOrder_ShouldReturn400_OnBadRequest() throws Exception {
         when(orderService.createOrder(any(BookOrder.class))).thenThrow(new IllegalArgumentException("Bad Request"));
 
@@ -103,6 +112,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void updateOrderStatus_ShouldReturn200() throws Exception {
         BookOrder updated = new BookOrder.Builder("ORD-1", "Alice").status(OrderStatus.APPROVED).build();
         when(orderService.updateOrderStatus("ORD-1", OrderStatus.APPROVED)).thenReturn(updated);
@@ -114,6 +124,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void updateOrderStatus_ShouldReturn404_WhenNotFound() throws Exception {
         when(orderService.updateOrderStatus("UNKNOWN", OrderStatus.APPROVED))
                 .thenThrow(new IllegalArgumentException("Not found"));
@@ -124,6 +135,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void updateOrderStatus_ShouldReturn409_WhenStateConflict() throws Exception {
         when(orderService.updateOrderStatus("ORD-1", OrderStatus.APPROVED))
                 .thenThrow(new IllegalStateException("Conflict"));
@@ -134,6 +146,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void deleteOrder_ShouldReturn204() throws Exception {
         doNothing().when(orderService).deleteOrder("ORD-1");
 
@@ -142,6 +155,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "USER")
     void deleteOrder_ShouldReturn404_WhenNotFound() throws Exception {
         doThrow(new IllegalArgumentException("Not found")).when(orderService).deleteOrder("UNKNOWN");
 

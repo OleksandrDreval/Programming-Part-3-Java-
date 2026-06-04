@@ -124,8 +124,9 @@ class OrderServiceTest {
 
     @Test
     void createOrder_ShouldThrowException_WhenBooksIsNull() {
-        BookOrder nullBooksOrder = new BookOrder.Builder("ORD-3", "Bob").books(null).build();
-        assertThrows(IllegalArgumentException.class, () -> orderService.createOrder(nullBooksOrder));
+        BookOrder mockOrder = mock(BookOrder.class);
+        when(mockOrder.getBooks()).thenReturn(null);
+        assertThrows(IllegalArgumentException.class, () -> orderService.createOrder(mockOrder));
     }
 
     @Test

@@ -44,6 +44,13 @@ class CatalogServiceTest {
   }
 
   @Test
+  void removeBookShouldSuccessfullyRemoveWhenIdExists() {
+    Book saved = catalogService.addBook("Dune", "Frank Herbert", 1965, BookGenre.SCIENCE_FICTION);
+    catalogService.removeBook(saved.getId());
+    assertEquals(0, catalogService.findAllBooks().size());
+  }
+
+  @Test
   void findBooksByGenreShouldReturnOnlyMatchingBooks() {
     catalogService.addBook("Dune", "Frank Herbert", 1965, BookGenre.SCIENCE_FICTION);
     catalogService.addBook("1984", "George Orwell", 1949, BookGenre.FICTION);
