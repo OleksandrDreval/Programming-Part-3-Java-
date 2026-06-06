@@ -1,0 +1,7 @@
+package ua.nure.ice.bookcatalog.laboratorna4.exception;
+
+public class InvalidBookDataException extends RuntimeException {
+  public InvalidBookDataException(String message) {
+    super(message);
+  }
+}
